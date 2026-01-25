@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Amritsar 1947: Mapping the Partition Violence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --sepia-dark: #3d2914;
+            --sepia-medium: #6b4423;
+            --parchment: #f4e4bc;
+            --parchment-dark: #e8d4a8;
+            --blood-red: #8b0000;
+            --blood-dark: #5c0000;
+            --gold: #c9a227;
+        }
+
+        body {
+            font-family: 'Crimson Text', Georgia, serif;
+            background: linear-gradient(135deg, #2a1f14 0%, #1a1410 100%);
+            color: var(--sepia-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            background: var(--parchment);
+        }
+
+        .header {
+            background: linear-gradient(180deg, var(--sepia-dark) 0%, #2a1f14 100%);
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 3px double var(--gold);
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            color: var(--parchment);
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 8px;
+        }
+
+        .header .subtitle {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 0.95rem;
+            color: var(--gold);
+            font-style: italic;
+        }
+
+        /* MONTH FILTER SECTION */
+        .filter-section {
+            background: linear-gradient(180deg, #4a3520 0%, #3d2914 100%);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .filter-title {
+            color: var(--parchment);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--gold);
+            background: transparent;
+            color: var(--parchment);
+            font-family: 'Crimson Text', serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: rgba(201, 162, 39, 0.2);
+        }
+
+        .filter-btn.active {
+            background: var(--gold);
+            color: var(--sepia-dark);
+            font-weight: 600;
+        }
+
+        .filter-btn.march { border-color: #DC143C; }
+        .filter-btn.march.active { background: #DC143C; color: white; }
+        .filter-btn.april { border-color: #FF6347; }
+        .filter-btn.april.active { background: #FF6347; color: white; }
+        .filter-btn.may { border-color: #FF8C00; }
+        .filter-btn.may.active { background: #FF8C00; color: white; }
+        .filter-btn.june { border-color: #228B22; }
+        .filter-btn.june.active { background: #228B22; color: white; }
+        .filter-btn.july { border-color: #4169E1; }
+        .filter-btn.july.active { background: #4169E1; color: white; }
+        .filter-btn.august { border-color: #8B0000; }
+        .filter-btn.august.active { background: #8B0000; color: white; }
+        .filter-btn.september { border-color: #4B0082; }
+        .filter-btn.september.active { background: #4B0082; color: white; }
+
+        /* MONTH SUMMARY BOX */
+        .month-summary {
+            display: none;
+            background: rgba(0,0,0,0.8);
+            color: var(--parchment);
+            padding: 15px 20px;
+            margin: 10px auto;
+            max-width: 900px;
+            border-radius: 8px;
+            text-align: left;
+            border: 1px solid var(--gold);
+        }
+
+        .month-summary.active {
+            display: block;
+        }
+
+        .month-summary h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .month-summary p {
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .month-summary .death-toll {
+            background: rgba(139,0,0,0.3);
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-top: 10px;
+            border-left: 3px solid #8B0000;
+        }
+
+        .map-section {
+            position: relative;
+            width: 100%;
+            background: #e8d4a8;
+        }
+
+        svg { width: 100%; height: auto; display: block; }
+
+        .event-marker {
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .event-marker.hidden {
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .event-marker .pin-group {
+            transition: filter 0.2s ease;
+        }
+
+        .event-marker:hover .pin-group {
+            filter: brightness(1.2);
+        }
+
+        .marker-tooltip {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .event-marker:hover .marker-tooltip {
+            opacity: 1;
+        }
+
+        /* Legend */
+        .legend-section {
+            background: linear-gradient(180deg, #3d2914 0%, #2a1f14 100%);
+            padding: 15px;
+            border-top: 2px solid var(--gold);
+        }
+
+        .legend-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--parchment);
+            font-size: 0.85rem;
+        }
+
+        .legend-pin {
+            width: 14px;
+            height: 20px;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            border: 1px solid var(--gold);
+        }
+
+        /* Events Section */
+        .events-section {
+            padding: 25px 15px;
+            background: var(--parchment);
+        }
+
+        .events-section h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            text-align: center;
+            color: var(--sepia-dark);
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid var(--sepia-medium);
+            padding-bottom: 10px;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .event-card {
+            background: linear-gradient(135deg, #fff 0%, var(--parchment) 100%);
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 5px solid #DC143C;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .event-card.hidden {
+            display: none;
+        }
+
+        .event-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .event-card.massacre { border-left-color: #8B0000; }
+        .event-card.fire { border-left-color: #FF4500; }
+        .event-card.refuge { border-left-color: #228B22; }
+        .event-card.heroism { border-left-color: #DAA520; }
+        .event-card.historic { border-left-color: #6B4423; }
+
+        .event-card .date {
+            font-size: 0.8rem;
+            color: #888;
+            font-family: 'EB Garamond', serif;
+        }
+
+        .event-card h3 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1rem;
+            margin: 5px 0;
+            color: var(--sepia-dark);
+        }
+
+        .event-card .quote {
+            font-style: italic;
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.4;
+        }
+
+        .event-card .month-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+            color: white;
+        }
+
+        .month-tag.march { background: #DC143C; }
+        .month-tag.april { background: #FF6347; }
+        .month-tag.may { background: #FF8C00; }
+        .month-tag.june { background: #228B22; }
+        .month-tag.july { background: #4169E1; }
+        .month-tag.august { background: #8B0000; }
+        .month-tag.september { background: #4B0082; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .modal-content {
+            background: var(--parchment);
+            max-width: 680px;
+            width: 100%;
+            border-radius: 12px;
+            margin: 40px auto;
+            position: relative;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--sepia-dark) 0%, var(--sepia-medium) 100%);
+            padding: 20px 25px;
+            border-radius: 12px 12px 0 0;
+            border-bottom: 3px solid var(--gold);
+        }
+
+        .modal-header h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            color: var(--parchment);
+            font-size: 1.4rem;
+        }
+
+        .modal-header .modal-date {
+            color: var(--gold);
+            font-family: 'EB Garamond', serif;
+            font-style: italic;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px; right: 20px;
+            background: none;
+            border: none;
+            color: var(--parchment);
+            font-size: 2rem;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .modal-close:hover { opacity: 1; }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-body p {
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .modal-quote {
+            background: linear-gradient(90deg, var(--blood-dark) 0%, var(--blood-red) 100%);
+            color: var(--parchment);
+            padding: 18px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--gold);
+        }
+
+        .modal-quote p {
+            font-style: italic;
+            font-size: 1.05rem;
+            margin-bottom: 10px;
+        }
+
+        .modal-quote .source {
+            text-align: right;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-style: normal;
+        }
+
+        .modal-sources {
+            font-size: 0.85rem;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        /* Resources */
+        .resources-section {
+            background: linear-gradient(180deg, var(--sepia-dark) 0%, #2a1f14 100%);
+            padding: 25px 15px;
+            color: var(--parchment);
+        }
+
+        .resources-section h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .resource-box h4 {
+            color: var(--gold);
+            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .resource-box ul {
+            list-style: none;
+        }
+
+        .resource-box li {
+            padding: 4px 0;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #1a1410;
+            color: rgba(244,228,188,0.7);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>AMRITSAR 1947</h1>
+            <p class="subtitle">Mapping the Partition Violence — March to September</p>
+        </header>
+
+        <!-- MONTH FILTER -->
+        <section class="filter-section">
+            <p class="filter-title">Filter Events by Month</p>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-month="all">All Events</button>
+                <button class="filter-btn march" data-month="march">March</button>
+                <button class="filter-btn april" data-month="april">April</button>
+                <button class="filter-btn may" data-month="may">May</button>
+                <button class="filter-btn june" data-month="june">June</button>
+                <button class="filter-btn july" data-month="july">July</button>
+                <button class="filter-btn august" data-month="august">August</button>
+                <button class="filter-btn september" data-month="september">September</button>
+            </div>
+
+            <!-- Month Summaries -->
+            <div class="month-summary" data-summary="march">
+                <h3>MARCH 1947 — The Conflagration Begins</h3>
+                <p><strong>March 2:</strong> Khizr Hayat Tiwana resigns as Premier under Muslim League pressure.</p>
+                <p><strong>March 3:</strong> Master Tara Singh brandishes kirpan at Punjab Assembly, shouts "Pakistan Murdabad."</p>
+                <p><strong>March 4:</strong> Hindu-Sikh demonstrations against Pakistan demand. Clashes erupt.</p>
+                <p><strong>March 5 (Holi):</strong> Violence explodes in Hall Bazaar. Sharifpura train attack. Hall Bazaar, Katra Jaimal Singh destroyed. "Tall pillars of smoke seen from 5 miles away."</p>
+                <p><strong>March 6:</strong> Chowk Pragdas mosque attack. Sikh milkmen massacred near Hathi Gate (18+ bodies to mortuary). British troops brought in on 7th.</p>
+                <div class="death-toll"><strong>Official toll by March 16:</strong> Punjab-wide 1,046 killed, 1,167 injured. Amritsar among worst affected.</div>
+            </div>
+
+            <div class="month-summary" data-summary="april">
+                <h3>APRIL 1947 — The Lull Breaks</h3>
+                <p>After a relative calm following the March outbreak, violence resurges on <strong>April 11</strong> (Friday).</p>
+                <p>A Muslim crowd of 4,000-5,000 comes to Chowk Pragdas for Friday prayers, but they are armed and shouting revenge slogans. After prayers, some attack Sikhs, triggering renewed rioting.</p>
+                <p><strong>April 11:</strong> Sikh grinding mill gutted by Muslim mob. One Sikh fired upon by police without cause.</p>
+                <p>Throughout April, stabbing incidents continue in alleys and bazaars. Both communities arm themselves.</p>
+                <div class="death-toll"><strong>Context:</strong> Violence in Amritsar and Lahore "bounced off each other"—a flare-up in one city triggered reprisals in the other.</div>
+            </div>
+
+            <div class="month-summary" data-summary="may">
+                <h3>MAY 1947 — Systematic Killings</h3>
+                <p><strong>May 2:</strong> Sikh stabbed outside Hakiman Gate.</p>
+                <p><strong>May 10:</strong> The Daimganj Idgah attack—7 Hindus and Sikhs returning from a child's cremation are ambushed, killed, and their bodies soaked in petrol and set ablaze. The smoke attracts police from Amritsar Fort.</p>
+                <p><strong>May 21:</strong> Sikh found murdered in Gol Bagh between Baijnath High School and Railway Footbridge.</p>
+                <p><strong>May 26:</strong> Muslim Sub-Inspector chases Hindu from Islamabad Railway Crossing to Khalsa College, firing repeatedly. One Hindu murdered in Chitta Katra.</p>
+                <p><strong>Locations with multiple killings:</strong> 9 Sikhs killed outside Bhagtanwala Gate, 7 in Daimganj, 30 outside Rambagh Gate, 12 outside Sharifpura.</p>
+                <div class="death-toll"><strong>Key areas:</strong> Sharifpura, Mahan Singh Gate, Hathi Gate, Bhagtanwala Gate, and Chauk Farid were "especially notorious" for attacks on Sikhs.</div>
+            </div>
+
+            <div class="month-summary" data-summary="june">
+                <h3>JUNE 1947 — Heroes Amid Horror</h3>
+                <p><strong>June 3:</strong> Mountbatten announces Partition Plan. Punjab to be divided.</p>
+                <p><strong>June 23:</strong> Punjab Legislative Assembly votes on partition. Western section votes against (69-27), Eastern section votes for (50-22).</p>
+                <p>While violence continues, remarkable acts of humanity emerge:</p>
+                <p><strong>Dr. Abdur Rauf</strong> in Katra Karamsingh saves 200 cornered non-Muslims by invoking Islamic teachings.</p>
+                <p><strong>Bawa Ghansham</strong>, a Sikh Communist, shelters hundreds of Muslims at great personal risk.</p>
+                <div class="death-toll"><strong>Context:</strong> Violence "on a relatively lower scale" compared to March, but tension mounts as Partition becomes inevitable.</div>
+            </div>
+
+            <div class="month-summary" data-summary="july">
+                <h3>JULY 1947 — Jathas Organize</h3>
+                <p><strong>July 10:</strong> Giani Kartar Singh issues an ultimatum to Governor Jenkins—if Sikh demands not met, they will fight by "murdering officials, cutting railway lines and telegraph lines, destroying canal headworks."</p>
+                <p><strong>July 11:</strong> "General" Mohan Singh tells Jenkins the only solution is "a very substantial exchange of population." If it doesn't happen, "the Sikhs would be driven to facilitate it by a massacre of Muslims."</p>
+                <p><strong>July 30:</strong> Jenkins reports to Mountbatten: "a string of rural outrages" in Amritsar district. Muslims murdered "in various ways." "The aggressors in all cases seem to be the Sikhs."</p>
+                <p>Sikh jatha strength estimated at <strong>19,000</strong>. Preparations intensify.</p>
+                <div class="death-toll"><strong>Jenkins' warning:</strong> "There is going to be trouble with the Sikhs. When, and how bad, the Governor cannot yet say."</div>
+            </div>
+
+            <div class="month-summary" data-summary="august">
+                <h3>AUGUST 1947 — The Great Cleansing</h3>
+                <p><strong>August 1:</strong> Jenkins' urgent telegram to Mountbatten: jathas targeting Muslim villages around Amritsar. Nearly two dozen Muslims killed and 30 wounded in 48 hours. Four trains attacked.</p>
+                <p><strong>August 14-15:</strong> Independence. Mass Muslim exodus from Amritsar. "Within the space of a day and a night, almost no Muslim was to be seen in Amritsar when freedom dawned—except those who had entrenched themselves in Sharifpura."</p>
+                <p><strong>August 17:</strong> Radcliffe Award announced. Amritsar goes to India. Sikhs and Hindus "celebrate their victory."</p>
+                <p><strong>August 25 (The Times):</strong> "The Sikhs are on the war-path. They are clearing eastern Punjab of Muslims, butchering hundreds daily... Some large towns like Amritsar are now quieter, because there are no Muslims left."</p>
+                <p>Amritsar becomes transit point for 250,000+ Muslim refugees heading to Lahore. Crowds chant "No Muslims out!"</p>
+                <div class="death-toll"><strong>Nehru to Gandhi, August 22:</strong> "Twice as many Muslims had been killed in East Punjab as Hindus and Sikhs in the West."</div>
+            </div>
+
+            <div class="month-summary" data-summary="september">
+                <h3>SEPTEMBER 1947 — The Ghost Trains</h3>
+                <p><strong>Early September:</strong> 1,000 Muslim refugees massacred on a Pakistan-bound train near Khalsa College.</p>
+                <p><strong>September 22:</strong> THE GREAT TRAIN MASSACRE. A train carrying 4,000+ Muslims is attacked at Amritsar for three hours. 3,000 killed, 1,000 wounded. Only 100 remain uninjured. The British commanding officer is killed—reportedly by his own men after ordering them to fire on attackers.</p>
+                <p><strong>Late September:</strong> Pakistan stops all trains from East Punjab. The Sikh jathas are described as "ruthless," leading attacks for "ethnically cleansing" East Punjab.</p>
+                <p>Violence continues into October before "petering out by mid-October."</p>
+                <div class="death-toll"><strong>Final context:</strong> Amritsar district 46.5% Muslim pre-Partition. By October, zero Muslims remain in most areas.</div>
+            </div>
+        </section>
+
+        <section class="map-section">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1020">
+                <defs>
+                    <pattern id="parchmentTexture" patternUnits="userSpaceOnUse" width="100" height="100">
+                        <rect width="100" height="100" fill="#E8E0D0"/>
+                        <circle cx="20" cy="30" r="1" fill="#D8D0C0" opacity="0.5"/>
+                        <circle cx="70" cy="60" r="1.5" fill="#C8C0B0" opacity="0.4"/>
+                        <circle cx="40" cy="80" r="1" fill="#D0C8B8" opacity="0.3"/>
+                    </pattern>
+                    <filter id="pinShadow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feDropShadow dx="2" dy="3" stdDeviation="2" flood-opacity="0.4"/>
+                    </filter>
+                </defs>
+
+                <!-- Background -->
+                <rect width="1200" height="1020" fill="url(#parchmentTexture)"/>
+
+                <!-- Walled City Boundary -->
+                <path d="M 150 500 
+                         Q 180 320, 350 280 
+                         Q 550 220, 750 280 
+                         Q 900 320, 1000 500 
+                         Q 1020 700, 900 850 
+                         Q 700 950, 500 950 
+                         Q 300 950, 200 850 
+                         Q 130 700, 150 500 Z" 
+                      fill="none" stroke="#8B7355" stroke-width="8" stroke-dasharray="20,8" opacity="0.7"/>
+
+                <!-- Inner city texture -->
+                <path d="M 170 500 
+                         Q 200 340, 360 300 
+                         Q 550 245, 740 300 
+                         Q 880 340, 980 500 
+                         Q 1000 680, 880 830 
+                         Q 690 920, 500 920 
+                         Q 310 920, 220 830 
+                         Q 150 680, 170 500 Z" 
+                      fill="#D5C5A5" opacity="0.4"/>
+
+                <!-- Major Roads -->
+                <line x1="50" y1="520" x2="150" y2="510" stroke="#A09080" stroke-width="12" opacity="0.6"/>
+                <line x1="1000" y1="510" x2="1150" y2="520" stroke="#A09080" stroke-width="12" opacity="0.6"/>
+                <path d="M 500 520 Q 650 510, 800 515 Q 900 518, 1000 510" stroke="#9A8A7A" stroke-width="9" fill="none" opacity="0.7"/>
+                <path d="M 500 520 Q 350 515, 200 520" stroke="#9A8A7A" stroke-width="9" fill="none" opacity="0.7"/>
+                <path d="M 600 530 L 600 700 Q 600 800, 650 880" stroke="#8A7A6A" stroke-width="6" fill="none" opacity="0.6"/>
+
+                <!-- Sarovars -->
+                <ellipse cx="620" cy="580" rx="70" ry="55" fill="#7BA3C4" stroke="#5A8AAA" stroke-width="2" opacity="0.7"/>
+                <rect x="605" y="565" width="30" height="30" fill="#FFD700" stroke="#DAA520" stroke-width="2" rx="2"/>
+                <ellipse cx="720" cy="680" rx="25" ry="20" fill="#8AB5D0" stroke="#6A95B0" stroke-width="1.5" opacity="0.6"/>
+                <ellipse cx="500" cy="650" rx="22" ry="18" fill="#8AB5D0" stroke="#6A95B0" stroke-width="1.5" opacity="0.6"/>
+                <ellipse cx="750" cy="780" rx="20" ry="16" fill="#8AB5D0" stroke="#6A95B0" stroke-width="1.5" opacity="0.6"/>
+                <ellipse cx="550" cy="750" rx="18" ry="14" fill="#8AB5D0" stroke="#6A95B0" stroke-width="1.5" opacity="0.6"/>
+
+                <!-- Outside walled city areas -->
+                <rect x="980" y="200" width="95" height="65" rx="5" fill="#D8D0C0" stroke="#A09080" stroke-width="1.5" opacity="0.6"/>
+                <rect x="1020" y="380" width="75" height="55" rx="4" fill="#C8B898" stroke="#9A8868" stroke-width="1.5" opacity="0.6"/>
+                <rect x="920" y="250" width="45" height="30" rx="3" fill="#A0A0A0" stroke="#808080" stroke-width="1" opacity="0.5"/>
+                <rect x="850" y="280" width="50" height="40" rx="3" fill="#C0B0A0" stroke="#908070" stroke-width="1" opacity="0.6"/>
+
+                <!-- Gates -->
+                <g fill="#7A6040" stroke="#5A4030" stroke-width="1" opacity="0.6">
+                    <rect x="1020" y="508" width="14" height="24" rx="2"/>
+                    <rect x="127" y="508" width="14" height="24" rx="2"/>
+                    <rect x="177" y="398" width="12" height="20" rx="2"/>
+                    <rect x="947" y="308" width="12" height="20" rx="2"/>
+                    <rect x="154" y="573" width="12" height="20" rx="2"/>
+                    <rect x="177" y="683" width="12" height="20" rx="2"/>
+                    <rect x="222" y="803" width="12" height="20" rx="2"/>
+                    <rect x="262" y="298" width="12" height="20" rx="2"/>
+                    <rect x="787" y="908" width="12" height="20" rx="2"/>
+                    <rect x="637" y="958" width="12" height="20" rx="2"/>
+                    <rect x="472" y="968" width="12" height="20" rx="2"/>
+                    <rect x="1002" y="643" width="12" height="20" rx="2"/>
+                    <rect x="362" y="168" width="12" height="20" rx="2"/>
+                    <rect x="420" y="580" width="12" height="20" rx="2"/>
+                </g>
+
+                <!-- Gate Labels -->
+                <g font-family="'Crimson Text', serif" font-size="10" fill="#4A3A2A" font-weight="600">
+                    <text x="1028" y="500" text-anchor="middle">HALL GATE</text>
+                    <text x="135" y="500" text-anchor="middle">LAHORI GATE</text>
+                    <text x="190" y="390" text-anchor="middle">Lohgarh Gate</text>
+                    <text x="960" y="300" text-anchor="middle">Hathi Gate</text>
+                    <text x="165" y="568" text-anchor="middle">Khazana Gate</text>
+                    <text x="188" y="678" text-anchor="middle">Hakima Gate</text>
+                    <text x="235" y="798" text-anchor="middle">Bhagtanwala</text>
+                    <text x="275" y="290" text-anchor="middle">Gilwali Gate</text>
+                    <text x="795" y="940" text-anchor="middle">Sultanwind Gate</text>
+                    <text x="645" y="990" text-anchor="middle">Mahan Singh Gate</text>
+                    <text x="480" y="1000" text-anchor="middle">Sheranwala Gate</text>
+                    <text x="1030" y="638" text-anchor="middle">Ramgarhia Gate</text>
+                    <text x="370" y="160" text-anchor="middle">Ahluwalia Gate</text>
+                    <text x="432" y="575" text-anchor="middle">Ghee Mandi</text>
+                </g>
+
+                <!-- Katra Labels -->
+                <g font-family="'Crimson Text', serif" font-size="11" fill="#5A4A3A" font-style="italic">
+                    <text x="500" y="480">Katra Sher Singh</text>
+                    <text x="650" y="450">Katra Motiram</text>
+                    <text x="380" y="550">Katra Dathan</text>
+                    <text x="320" y="480">Katra Odlu</text>
+                    <text x="420" y="340">Katra Ahluwalia</text>
+                    <text x="280" y="580">Katra Khazana</text>
+                    <text x="320" y="660">Katra Karamsingh</text>
+                    <text x="280" y="720">Katra Hakima</text>
+                    <text x="380" y="820">Katra Jaimal Singh</text>
+                    <text x="500" y="850">Katra Milowal</text>
+                    <text x="850" y="700">Katra Ramgarhia</text>
+                    <text x="700" y="800">Katra Himmat Singh</text>
+                    <text x="600" y="880">Ramaband Bagh</text>
+                    <text x="760" y="850">Katra Patshahi</text>
+                    <text x="850" y="600">Shakti Nagar</text>
+                    <text x="450" y="750">Katra Baghian</text>
+                    <text x="550" y="400">Katra Mohar Singh</text>
+                    <text x="750" y="550">Katra Amar Singh</text>
+                    <text x="900" y="550">Katra Dal Singh</text>
+                </g>
+
+                <!-- Area Labels -->
+                <g font-family="'Crimson Text', serif" font-size="10" fill="#6A5A4A" font-style="italic">
+                    <text x="750" y="510" font-size="11" font-weight="600" transform="rotate(-2 750 510)">HALL BAZAAR</text>
+                    <text x="560" y="540" font-weight="500">Guru Bazaar</text>
+                    <text x="430" y="590">Ghee Mandi Bazaar</text>
+                    <text x="650" y="870">Bazar Mahan Singh</text>
+                    <text x="720" y="620">Chaurasti Attari</text>
+                    <text x="620" y="560" fill="#B8860B" font-weight="600">Harmandir Sahib</text>
+                </g>
+
+                <!-- Outside City Labels -->
+                <g font-family="'Crimson Text', serif" font-size="11" fill="#5A4A3A" font-weight="500">
+                    <text x="1015" y="245">SHARIFPURA</text>
+                    <text x="1058" y="435">Khalsa College</text>
+                    <text x="943" y="278" font-size="9">Railway Station</text>
+                    <text x="875" y="308" font-size="9">MAO College</text>
+                </g>
+
+                <!-- Muslim Area Labels -->
+                <g font-family="'Crimson Text', serif" font-size="9" fill="#408040" font-style="italic" opacity="0.8">
+                    <text x="875" y="245">Muslim majority</text>
+                    <text x="200" y="420">Muslim area</text>
+                    <text x="290" y="400">Chitta Katra</text>
+                    <text x="830" y="295">Chowk Farid</text>
+                </g>
+
+                <!-- Street Labels -->
+                <g font-family="'Crimson Text', serif" fill="#6A5A4A" font-size="8" font-style="italic">
+                    <text x="750" y="490" transform="rotate(-5 750 490)">← To GT Road (Lahore)</text>
+                    <text x="80" y="505" transform="rotate(5 80 505)">GT Road (Delhi) →</text>
+                    <text x="830" y="470">The Mall</text>
+                    <text x="560" y="420">Gali Lahorianwali</text>
+                    <text x="720" y="445">Rego Bridge →</text>
+                    <text x="600" y="950">Circular Road</text>
+                </g>
+
+                <!-- ========== EVENT MARKERS ========== -->
+
+                <!-- MARCH EVENTS -->
+                
+                <!-- 1. Hall Bazaar - March 5 -->
+                <g class="event-marker" data-event="hallbazaar" data-month="march">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 880 520 C 870 510, 865 490, 865 480 C 865 465, 880 455, 895 465 C 905 472, 905 490, 895 505 Z" fill="#DC143C" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="880" cy="478" r="6" fill="#fff"/>
+                        <text x="880" y="481" text-anchor="middle" font-size="8" font-weight="bold" fill="#DC143C">1</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="830" y="445" width="100" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="880" y="459" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Hall Bazaar</text>
+                    </g>
+                </g>
+
+                <!-- 2. Sharifpura Train - March 5 -->
+                <g class="event-marker" data-event="sharifpura_train" data-month="march">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 1030 220 C 1020 210, 1015 190, 1015 180 C 1015 165, 1030 155, 1045 165 C 1055 172, 1055 190, 1045 205 Z" fill="#8B0000" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="1030" cy="178" r="6" fill="#fff"/>
+                        <text x="1030" y="181" text-anchor="middle" font-size="8" font-weight="bold" fill="#8B0000">2</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="970" y="145" width="120" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="1030" y="159" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Sharifpura Train Attack</text>
+                    </g>
+                </g>
+
+                <!-- 3. Chowk Pragdas - March 6 -->
+                <g class="event-marker" data-event="chowkpragdas" data-month="march">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 460 420 C 450 410, 445 390, 445 380 C 445 365, 460 355, 475 365 C 485 372, 485 390, 475 405 Z" fill="#DC143C" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="460" cy="378" r="6" fill="#fff"/>
+                        <text x="460" y="381" text-anchor="middle" font-size="8" font-weight="bold" fill="#DC143C">3</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="400" y="345" width="120" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="460" y="359" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Chowk Pragdas Mosque</text>
+                    </g>
+                </g>
+
+                <!-- 4. Hathi Gate Milkmen - March 5-6 -->
+                <g class="event-marker" data-event="hathigate" data-month="march">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 960 320 C 950 310, 945 290, 945 280 C 945 265, 960 255, 975 265 C 985 272, 985 290, 975 305 Z" fill="#8B0000" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="960" cy="278" r="6" fill="#fff"/>
+                        <text x="960" y="281" text-anchor="middle" font-size="8" font-weight="bold" fill="#8B0000">4</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="890" y="245" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="960" y="259" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Hathi Gate - Milkmen Killed</text>
+                    </g>
+                </g>
+
+                <!-- 5. Katra Jaimal Singh - March -->
+                <g class="event-marker" data-event="katrajaimal" data-month="march">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 380 820 C 370 810, 365 790, 365 780 C 365 765, 380 755, 395 765 C 405 772, 405 790, 395 805 Z" fill="#FF4500" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="380" cy="778" r="6" fill="#fff"/>
+                        <text x="380" y="781" text-anchor="middle" font-size="8" font-weight="bold" fill="#FF4500">5</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="310" y="745" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="380" y="759" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Katra Jaimal Singh Burned</text>
+                    </g>
+                </g>
+
+                <!-- 6. Farid Chowk - March -->
+                <g class="event-marker" data-event="faridchowk" data-month="march">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 870 340 C 860 330, 855 310, 855 300 C 855 285, 870 275, 885 285 C 895 292, 895 310, 885 325 Z" fill="#FF4500" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="870" cy="298" r="6" fill="#fff"/>
+                        <text x="870" y="301" text-anchor="middle" font-size="8" font-weight="bold" fill="#FF4500">6</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="810" y="265" width="120" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="870" y="279" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Farid Chowk - Fire</text>
+                    </g>
+                </g>
+
+                <!-- 7. Muslim Relocation Order - March 5 -->
+                <g class="event-marker" data-event="muslim_relocation" data-month="march">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 1010 190 C 1000 180, 995 160, 995 150 C 995 135, 1010 125, 1025 135 C 1035 142, 1035 160, 1025 175 Z" fill="#DC143C" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="1010" cy="148" r="6" fill="#fff"/>
+                        <text x="1010" y="151" text-anchor="middle" font-size="8" font-weight="bold" fill="#DC143C">7</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="940" y="115" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="1010" y="129" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Muslims Relocate Here</text>
+                    </g>
+                </g>
+
+                <!-- APRIL EVENT -->
+                <!-- 8. April 11 Riots Resume -->
+                <g class="event-marker" data-event="april_riots" data-month="april">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 480 450 C 470 440, 465 420, 465 410 C 465 395, 480 385, 495 395 C 505 402, 505 420, 495 435 Z" fill="#FF6347" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="480" cy="408" r="6" fill="#fff"/>
+                        <text x="480" y="411" text-anchor="middle" font-size="8" font-weight="bold" fill="#FF6347">8</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="420" y="375" width="120" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="480" y="389" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">April 11 Riots Resume</text>
+                    </g>
+                </g>
+
+                <!-- MAY EVENTS -->
+                <!-- 9. Daimganj Idgah - May 10 -->
+                <g class="event-marker" data-event="daimganj" data-month="may">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 250 750 C 240 740, 235 720, 235 710 C 235 695, 250 685, 265 695 C 275 702, 275 720, 265 735 Z" fill="#8B0000" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="250" cy="708" r="6" fill="#fff"/>
+                        <text x="250" y="711" text-anchor="middle" font-size="8" font-weight="bold" fill="#8B0000">9</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="180" y="675" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="250" y="689" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Daimganj Idgah Attack</text>
+                    </g>
+                </g>
+
+                <!-- 10. Hakiman Gate - May 2 -->
+                <g class="event-marker" data-event="hakimangate" data-month="may">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 200 700 C 190 690, 185 670, 185 660 C 185 645, 200 635, 215 645 C 225 652, 225 670, 215 685 Z" fill="#FF8C00" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="200" cy="658" r="6" fill="#fff"/>
+                        <text x="200" y="661" text-anchor="middle" font-size="7" font-weight="bold" fill="#FF8C00">10</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="130" y="625" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="200" y="639" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Hakiman Gate Stabbing</text>
+                    </g>
+                </g>
+
+                <!-- 11. Gol Bagh - May 21 -->
+                <g class="event-marker" data-event="golbagh" data-month="may">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 920 450 C 910 440, 905 420, 905 410 C 905 395, 920 385, 935 395 C 945 402, 945 420, 935 435 Z" fill="#FF8C00" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="920" cy="408" r="6" fill="#fff"/>
+                        <text x="920" y="411" text-anchor="middle" font-size="7" font-weight="bold" fill="#FF8C00">11</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="850" y="375" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="920" y="389" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Gol Bagh Murder</text>
+                    </g>
+                </g>
+
+                <!-- 12. Bhagtanwala Gate - May -->
+                <g class="event-marker" data-event="bhagtanwala" data-month="may">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 240 820 C 230 810, 225 790, 225 780 C 225 765, 240 755, 255 765 C 265 772, 265 790, 255 805 Z" fill="#8B0000" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="240" cy="778" r="6" fill="#fff"/>
+                        <text x="240" y="781" text-anchor="middle" font-size="7" font-weight="bold" fill="#8B0000">12</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="170" y="745" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="240" y="759" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Bhagtanwala - 9 Killed</text>
+                    </g>
+                </g>
+
+                <!-- 13. Chitta Katra - May 26 -->
+                <g class="event-marker" data-event="chittakatra" data-month="may">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 280 430 C 270 420, 265 400, 265 390 C 265 375, 280 365, 295 375 C 305 382, 305 400, 295 415 Z" fill="#FF8C00" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="280" cy="388" r="6" fill="#fff"/>
+                        <text x="280" y="391" text-anchor="middle" font-size="7" font-weight="bold" fill="#FF8C00">13</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="210" y="355" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="280" y="369" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Chitta Katra Murder</text>
+                    </g>
+                </g>
+
+                <!-- JUNE EVENTS -->
+                <!-- 14. Dr. Rauf - June -->
+                <g class="event-marker" data-event="drrauf" data-month="june">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 340 680 C 330 670, 325 650, 325 640 C 325 625, 340 615, 355 625 C 365 632, 365 650, 355 665 Z" fill="#DAA520" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="340" cy="638" r="6" fill="#fff"/>
+                        <text x="340" y="641" text-anchor="middle" font-size="7" font-weight="bold" fill="#DAA520">14</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="270" y="605" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="340" y="619" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Dr. Rauf Saves 200</text>
+                    </g>
+                </g>
+
+                <!-- 15. Bawa Ghansham - June -->
+                <g class="event-marker" data-event="bawaghansham" data-month="june">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 550 620 C 540 610, 535 590, 535 580 C 535 565, 550 555, 565 565 C 575 572, 575 590, 565 605 Z" fill="#DAA520" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="550" cy="578" r="6" fill="#fff"/>
+                        <text x="550" y="581" text-anchor="middle" font-size="7" font-weight="bold" fill="#DAA520">15</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="480" y="545" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="550" y="559" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Bawa Ghansham's Refuge</text>
+                    </g>
+                </g>
+
+                <!-- JULY EVENTS -->
+                <!-- 16. Jatha Preparations - July -->
+                <g class="event-marker" data-event="jatha_prep" data-month="july">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 800 750 C 790 740, 785 720, 785 710 C 785 695, 800 685, 815 695 C 825 702, 825 720, 815 735 Z" fill="#4169E1" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="800" cy="708" r="6" fill="#fff"/>
+                        <text x="800" y="711" text-anchor="middle" font-size="7" font-weight="bold" fill="#4169E1">16</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="730" y="675" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="800" y="689" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Majithia House - Jathas</text>
+                    </g>
+                </g>
+
+                <!-- 17. Rural Outrages - July 30 -->
+                <g class="event-marker" data-event="rural_outrages" data-month="july">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 1100 300 C 1090 290, 1085 270, 1085 260 C 1085 245, 1100 235, 1115 245 C 1125 252, 1125 270, 1115 285 Z" fill="#4169E1" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="1100" cy="258" r="6" fill="#fff"/>
+                        <text x="1100" y="261" text-anchor="middle" font-size="7" font-weight="bold" fill="#4169E1">17</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="1030" y="225" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="1100" y="239" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Rural Outrages Begin</text>
+                    </g>
+                </g>
+
+                <!-- AUGUST EVENTS -->
+                <!-- 18. August 1 Jatha Attacks -->
+                <g class="event-marker" data-event="aug1_attacks" data-month="august">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 1100 160 C 1090 150, 1085 130, 1085 120 C 1085 105, 1100 95, 1115 105 C 1125 112, 1125 130, 1115 145 Z" fill="#8B0000" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="1100" cy="118" r="6" fill="#fff"/>
+                        <text x="1100" y="121" text-anchor="middle" font-size="7" font-weight="bold" fill="#8B0000">18</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="1030" y="85" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="1100" y="99" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Aug 1: Jatha Attacks</text>
+                    </g>
+                </g>
+
+                <!-- 19. Sharifpura Last Holdout - Aug 14-15 -->
+                <g class="event-marker" data-event="sharifpura_holdout" data-month="august">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 1050 250 C 1040 240, 1035 220, 1035 210 C 1035 195, 1050 185, 1065 195 C 1075 202, 1075 220, 1065 235 Z" fill="#8B0000" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="1050" cy="208" r="6" fill="#fff"/>
+                        <text x="1050" y="211" text-anchor="middle" font-size="7" font-weight="bold" fill="#8B0000">19</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="980" y="175" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="1050" y="189" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Sharifpura Last Holdout</text>
+                    </g>
+                </g>
+
+                <!-- 20. Chowk Bijli Wala - August -->
+                <g class="event-marker" data-event="chowkbijli" data-month="august">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 780 650 C 770 640, 765 620, 765 610 C 765 595, 780 585, 795 595 C 805 602, 805 620, 795 635 Z" fill="#FF4500" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="780" cy="608" r="6" fill="#fff"/>
+                        <text x="780" y="611" text-anchor="middle" font-size="7" font-weight="bold" fill="#FF4500">20</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="710" y="575" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="780" y="589" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Chowk Bijli Wala Rubble</text>
+                    </g>
+                </g>
+
+                <!-- 21. Lahori Gate Exodus - August -->
+                <g class="event-marker" data-event="lahorigate" data-month="august">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 150 530 C 140 520, 135 500, 135 490 C 135 475, 150 465, 165 475 C 175 482, 175 500, 165 515 Z" fill="#DC143C" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="150" cy="488" r="6" fill="#fff"/>
+                        <text x="150" y="491" text-anchor="middle" font-size="7" font-weight="bold" fill="#DC143C">21</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="80" y="455" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="150" y="469" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Lahori Gate Exodus</text>
+                    </g>
+                </g>
+
+                <!-- 22. MAO College - August -->
+                <g class="event-marker" data-event="maocollege" data-month="august">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 875 300 C 865 290, 860 270, 860 260 C 860 245, 875 235, 890 245 C 900 252, 900 270, 890 285 Z" fill="#DC143C" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="875" cy="258" r="6" fill="#fff"/>
+                        <text x="875" y="261" text-anchor="middle" font-size="7" font-weight="bold" fill="#DC143C">22</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="805" y="225" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="875" y="239" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">MAO College Abandoned</text>
+                    </g>
+                </g>
+
+                <!-- SEPTEMBER EVENTS -->
+                <!-- 23. Khalsa College Massacre - Sept -->
+                <g class="event-marker" data-event="khalsacollege_massacre" data-month="september">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 1060 410 C 1050 400, 1045 380, 1045 370 C 1045 355, 1060 345, 1075 355 C 1085 362, 1085 380, 1075 395 Z" fill="#4B0082" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="1060" cy="368" r="6" fill="#fff"/>
+                        <text x="1060" y="371" text-anchor="middle" font-size="7" font-weight="bold" fill="#4B0082">23</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="990" y="335" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="1060" y="349" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Khalsa College - 1000 Killed</text>
+                    </g>
+                </g>
+
+                <!-- 24. Sept 22 Train Massacre -->
+                <g class="event-marker" data-event="trainmassacre" data-month="september">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 950 380 C 940 370, 935 350, 935 340 C 935 325, 950 315, 965 325 C 975 332, 975 350, 965 365 Z" fill="#4B0082" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="950" cy="338" r="6" fill="#fff"/>
+                        <text x="950" y="341" text-anchor="middle" font-size="7" font-weight="bold" fill="#4B0082">24</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="880" y="305" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="950" y="319" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Sept 22: 3000 Killed</text>
+                    </g>
+                </g>
+
+                <!-- HISTORIC/ONGOING SITES -->
+                <!-- 25. Golden Temple -->
+                <g class="event-marker" data-event="goldentemple" data-month="all">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 620 560 C 610 550, 605 530, 605 520 C 605 505, 620 495, 635 505 C 645 512, 645 530, 635 545 Z" fill="#228B22" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="620" cy="518" r="6" fill="#fff"/>
+                        <text x="620" y="521" text-anchor="middle" font-size="7" font-weight="bold" fill="#228B22">25</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="550" y="485" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="620" y="499" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Golden Temple - Refuge</text>
+                    </g>
+                </g>
+
+                <!-- 26. Town Hall / Partition Museum -->
+                <g class="event-marker" data-event="townhall" data-month="all">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 700 550 C 690 540, 685 520, 685 510 C 685 495, 700 485, 715 495 C 725 502, 725 520, 715 535 Z" fill="#6B4423" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="700" cy="508" r="6" fill="#fff"/>
+                        <text x="700" y="511" text-anchor="middle" font-size="7" font-weight="bold" fill="#6B4423">26</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="630" y="475" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="700" y="489" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Town Hall / Museum</text>
+                    </g>
+                </g>
+
+                <!-- 27. Jallianwala Bagh -->
+                <g class="event-marker" data-event="jallianwala" data-month="all">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 680 620 C 670 610, 665 590, 665 580 C 665 565, 680 555, 695 565 C 705 572, 705 590, 695 605 Z" fill="#6B4423" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="680" cy="578" r="6" fill="#fff"/>
+                        <text x="680" y="581" text-anchor="middle" font-size="7" font-weight="bold" fill="#6B4423">27</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="610" y="545" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="680" y="559" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Jallianwala Bagh</text>
+                    </g>
+                </g>
+
+                <!-- 28. Gobindgarh Fort -->
+                <g class="event-marker" data-event="gobindgarh" data-month="all">
+                    <g class="pin-group" filter="url(#pinShadow)">
+                        <path d="M 100 500 C 90 490, 85 470, 85 460 C 85 445, 100 435, 115 445 C 125 452, 125 470, 115 485 Z" fill="#6B4423" stroke="#FFD700" stroke-width="2"/>
+                        <circle cx="100" cy="458" r="6" fill="#fff"/>
+                        <text x="100" y="461" text-anchor="middle" font-size="7" font-weight="bold" fill="#6B4423">28</text>
+                    </g>
+                    <g class="marker-tooltip">
+                        <rect x="30" y="425" width="140" height="20" rx="3" fill="rgba(50,30,15,0.95)"/>
+                        <text x="100" y="439" text-anchor="middle" fill="#f4e4bc" font-size="10" font-family="'Crimson Text'">Gobindgarh Fort</text>
+                    </g>
+                </g>
+
+                <!-- Compass -->
+                <g transform="translate(100, 140)">
+                    <circle cx="0" cy="0" r="25" fill="none" stroke="#7A6A5A" stroke-width="1.5"/>
+                    <polygon points="0,-28 -4,-18 4,-18" fill="#8B4513"/>
+                    <text x="0" y="-34" text-anchor="middle" font-size="11" fill="#4A3828" font-weight="bold" font-family="serif">N</text>
+                </g>
+
+                <!-- Scale -->
+                <g transform="translate(100, 960)">
+                    <line x1="0" y1="0" x2="100" y2="0" stroke="#5A4A3A" stroke-width="3"/>
+                    <line x1="0" y1="-4" x2="0" y2="4" stroke="#5A4A3A" stroke-width="2"/>
+                    <line x1="50" y1="-3" x2="50" y2="3" stroke="#5A4A3A" stroke-width="1.5"/>
+                    <line x1="100" y1="-4" x2="100" y2="4" stroke="#5A4A3A" stroke-width="2"/>
+                    <text x="50" y="16" text-anchor="middle" font-size="9" fill="#5A4A3A" font-family="'Crimson Text'">250 metres</text>
+                </g>
+            </svg>
+        </section>
+
+        <!-- Legend -->
+        <section class="legend-section">
+            <div class="legend-content">
+                <div class="legend-item">
+                    <div class="legend-pin" style="background: #DC143C;"></div>
+                    <span>Violence / Riots</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-pin" style="background: #8B0000;"></div>
+                    <span>Massacre</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-pin" style="background: #FF4500;"></div>
+                    <span>Arson / Fire</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-pin" style="background: #228B22;"></div>
+                    <span>Refuge / Safety</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-pin" style="background: #DAA520;"></div>
+                    <span>Heroism</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-pin" style="background: #6B4423;"></div>
+                    <span>Historic Sites</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Events Section -->
+        <section class="events-section">
+            <h2>Documented Events — Click Any Card for Details</h2>
+            <div class="events-grid">
+                <!-- MARCH -->
+                <div class="event-card" data-event="hallbazaar" data-month="march">
+                    <span class="date">1. 5 March 1947 <span class="month-tag march">MARCH</span></span>
+                    <h3>Hall Bazaar — Where It Began</h3>
+                    <p class="quote">"The tall pillars of smoke could be seen from as far as Chheharta which is more than five miles from Amritsar."</p>
+                </div>
+
+                <div class="event-card massacre" data-event="sharifpura_train" data-month="march">
+                    <span class="date">2. 5 March 1947 <span class="month-tag march">MARCH</span></span>
+                    <h3>Sharifpura Train Attack</h3>
+                    <p class="quote">"A gang armed with knives, lances and sticks was waiting... who immediately put a lance through the driver."</p>
+                </div>
+
+                <div class="event-card" data-event="chowkpragdas" data-month="march">
+                    <span class="date">3. 6 March 1947 <span class="month-tag march">MARCH</span></span>
+                    <h3>Chowk Pragdas Mosque</h3>
+                    <p class="quote">"In Chowk Prag Das there was a Hindu business area with a small masjid. 25 Muslims died in March 1947."</p>
+                </div>
+
+                <div class="event-card massacre" data-event="hathigate" data-month="march">
+                    <span class="date">4. 5-6 March 1947 <span class="month-tag march">MARCH</span></span>
+                    <h3>Hathi Gate — Milkmen Massacred</h3>
+                    <p class="quote">"By the 6th morning, 18 dead bodies of Sikh milkmen had been carried to the mortuary. The total killed must have been much larger."</p>
+                </div>
+
+                <div class="event-card fire" data-event="katrajaimal" data-month="march">
+                    <span class="date">5. March 1947 <span class="month-tag march">MARCH</span></span>
+                    <h3>Katra Jaimal Singh Destroyed</h3>
+                    <p class="quote">"Hall Bazar, Katra Jaimal Singh and several other localities were almost wholly destroyed."</p>
+                </div>
+
+                <div class="event-card fire" data-event="faridchowk" data-month="march">
+                    <span class="date">6. March 1947 <span class="month-tag march">MARCH</span></span>
+                    <h3>Farid Chowk — Riots Begin</h3>
+                    <p class="quote">"There was a fire in a shoe store and clothing store at Farid Chowk. This marked the beginning of riots in Amritsar."</p>
+                </div>
+
+                <div class="event-card" data-event="muslim_relocation" data-month="march">
+                    <span class="date">7. 5 March 1947 <span class="month-tag march">MARCH</span></span>
+                    <h3>Muslims Ordered to Sharifpura</h3>
+                    <p class="quote">"Muslims living in Hindu/Sikh-majority areas should be relocated to Muslim-majority areas for safety."</p>
+                </div>
+
+                <!-- APRIL -->
+                <div class="event-card" data-event="april_riots" data-month="april">
+                    <span class="date">8. 11 April 1947 <span class="month-tag april">APRIL</span></span>
+                    <h3>Riots Resume at Chowk Pragdas</h3>
+                    <p class="quote">"A large Muslim crowd of 4,000-5,000 came with ostensible purpose of prayers but were well-armed and shouting revenge slogans."</p>
+                </div>
+
+                <!-- MAY -->
+                <div class="event-card massacre" data-event="daimganj" data-month="may">
+                    <span class="date">9. 10 May 1947 <span class="month-tag may">MAY</span></span>
+                    <h3>Daimganj Idgah Attack</h3>
+                    <p class="quote">"The dead bodies were soaked in petrol and set ablaze. The smoke attracted police from Amritsar Fort."</p>
+                </div>
+
+                <div class="event-card" data-event="hakimangate" data-month="may">
+                    <span class="date">10. 2 May 1947 <span class="month-tag may">MAY</span></span>
+                    <h3>Hakiman Gate Stabbing</h3>
+                    <p class="quote">"One Sikh was stabbed outside Hakiman Gate."</p>
+                </div>
+
+                <div class="event-card" data-event="golbagh" data-month="may">
+                    <span class="date">11. 21 May 1947 <span class="month-tag may">MAY</span></span>
+                    <h3>Gol Bagh Murder</h3>
+                    <p class="quote">"One Sikh was found murdered in Gol Bagh between Baijnath High School and the Railway Footbridge."</p>
+                </div>
+
+                <div class="event-card massacre" data-event="bhagtanwala" data-month="may">
+                    <span class="date">12. May 1947 <span class="month-tag may">MAY</span></span>
+                    <h3>Bhagtanwala Gate — 9 Killed</h3>
+                    <p class="quote">"9 Sikhs killed outside Bhagtanwala Gate, near the brick kiln."</p>
+                </div>
+
+                <div class="event-card" data-event="chittakatra" data-month="may">
+                    <span class="date">13. 26 May 1947 <span class="month-tag may">MAY</span></span>
+                    <h3>Chitta Katra Murder</h3>
+                    <p class="quote">"One Hindu murdered in Chitta Katra. Muslim Sub-Inspector chased Hindu from Railway Crossing to Khalsa College, firing repeatedly."</p>
+                </div>
+
+                <!-- JUNE -->
+                <div class="event-card heroism" data-event="drrauf" data-month="june">
+                    <span class="date">14. June 1947 <span class="month-tag june">JUNE</span></span>
+                    <h3>Dr. Abdur Rauf Saves 200</h3>
+                    <p class="quote">"Asked to decide their fate, Dr. Rauf invoked Islamic teachings to counter those who wanted revenge. All 200 were set free."</p>
+                </div>
+
+                <div class="event-card heroism" data-event="bawaghansham" data-month="june">
+                    <span class="date">15. June 1947 <span class="month-tag june">JUNE</span></span>
+                    <h3>Bawa Ghansham — Sikh Hero</h3>
+                    <p class="quote">"Many Amritsari Muslims gratefully recall Bawa Ghansham as the man who saved their lives. He gave refuge to hundreds."</p>
+                </div>
+
+                <!-- JULY -->
+                <div class="event-card" data-event="jatha_prep" data-month="july">
+                    <span class="date">16. July 1947 <span class="month-tag july">JULY</span></span>
+                    <h3>Majithia House — Jatha HQ</h3>
+                    <p class="quote">"Ex-INA leaders operating from Majithia house in Amritsar." Jatha strength estimated at 19,000.</p>
+                </div>
+
+                <div class="event-card" data-event="rural_outrages" data-month="july">
+                    <span class="date">17. 30 July 1947 <span class="month-tag july">JULY</span></span>
+                    <h3>Rural Outrages Begin</h3>
+                    <p class="quote">"A string of rural outrages in Amritsar district. Muslims murdered in various ways. The aggressors seem to be the Sikhs."</p>
+                </div>
+
+                <!-- AUGUST -->
+                <div class="event-card massacre" data-event="aug1_attacks" data-month="august">
+                    <span class="date">18. 1 August 1947 <span class="month-tag august">AUGUST</span></span>
+                    <h3>August 1 — Jathas Strike</h3>
+                    <p class="quote">"Nearly two dozen Muslims killed and 30 wounded in 48 hours. Four passenger trains attacked." — Jenkins to Mountbatten</p>
+                </div>
+
+                <div class="event-card massacre" data-event="sharifpura_holdout" data-month="august">
+                    <span class="date">19. 14-15 August 1947 <span class="month-tag august">AUGUST</span></span>
+                    <h3>Sharifpura — Last Holdout</h3>
+                    <p class="quote">"Almost no Muslim was to be seen in Amritsar when freedom dawned—except those entrenched in Sharifpura."</p>
+                </div>
+
+                <div class="event-card fire" data-event="chowkbijli" data-month="august">
+                    <span class="date">20. August 1947 <span class="month-tag august">AUGUST</span></span>
+                    <h3>Chowk Bijli Wala — Rubble</h3>
+                    <p class="quote">"Indian soldiers walking through the debris of a building in the Chowk Bijli Wala area." — Getty Images</p>
+                </div>
+
+                <div class="event-card" data-event="lahorigate" data-month="august">
+                    <span class="date">21. August 1947 <span class="month-tag august">AUGUST</span></span>
+                    <h3>Lahori Gate — The Exodus</h3>
+                    <p class="quote">"The day we moved... that area was attacked. We had left about two hours before." — Prof. Zakariya</p>
+                </div>
+
+                <div class="event-card" data-event="maocollege" data-month="august">
+                    <span class="date">22. August 1947 <span class="month-tag august">AUGUST</span></span>
+                    <h3>MAO College Abandoned</h3>
+                    <p class="quote">"Some large towns like Amritsar are now quieter, because there are no Muslims left." — The Times, 25 Aug</p>
+                </div>
+
+                <!-- SEPTEMBER -->
+                <div class="event-card massacre" data-event="khalsacollege_massacre" data-month="september">
+                    <span class="date">23. Early Sept 1947 <span class="month-tag september">SEPT</span></span>
+                    <h3>Khalsa College — 1000 Killed</h3>
+                    <p class="quote">"They had massacred 1,000 Muslim refugees on a Pakistan-bound train near Khalsa College, Amritsar."</p>
+                </div>
+
+                <div class="event-card massacre" data-event="trainmassacre" data-month="september">
+                    <span class="date">24. 22 September 1947 <span class="month-tag september">SEPT</span></span>
+                    <h3>The Great Train Massacre</h3>
+                    <p class="quote">"3,000 killed, 1,000 wounded. Only 100 uninjured out of 4,000+ passengers. The worst train massacre of the Partition."</p>
+                </div>
+
+                <!-- ONGOING/ALL -->
+                <div class="event-card refuge" data-event="goldentemple" data-month="all">
+                    <span class="date">25. March–Sept 1947</span>
+                    <h3>Golden Temple — Refuge for All</h3>
+                    <p class="quote">"The temple's langar served thousands of displaced persons regardless of religion."</p>
+                </div>
+
+                <div class="event-card historic" data-event="townhall" data-month="all">
+                    <span class="date">26. 1947–Present</span>
+                    <h3>Town Hall / Partition Museum</h3>
+                    <p class="quote">"What it would have felt like to leave behind their homes, their friends, their lives." — Mallika Ahluwalia</p>
+                </div>
+
+                <div class="event-card historic" data-event="jallianwala" data-month="all">
+                    <span class="date">27. 1919 & 1947</span>
+                    <h3>Jallianwala Bagh</h3>
+                    <p class="quote">The garden that saw British bullets in 1919 witnessed neighbor turn against neighbor in 1947.</p>
+                </div>
+
+                <div class="event-card historic" data-event="gobindgarh" data-month="all">
+                    <span class="date">28. 1947</span>
+                    <h3>Gobindgarh Fort — Army Base</h3>
+                    <p class="quote">British troops responded to incidents but could not stop the escalating violence.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resources -->
+        <section class="resources-section">
+            <h2>Sources & References</h2>
+            <div class="resources-grid">
+                <div class="resource-box">
+                    <h4>Primary Research</h4>
+                    <ul>
+                        <li>Khosla, G.D. — <em>Stern Reckoning</em> (1949)</li>
+                        <li>Ishtiaq Ahmed — <em>The Punjab Bloodied, Partitioned and Cleansed</em></li>
+                        <li>Nisid Hajari — <em>Midnight's Furies</em></li>
+                        <li>Ian Talbot — <em>Divided Cities</em></li>
+                        <li>Paul Brass — <em>Victims, Heroes or Martyrs?</em></li>
+                        <li>Kim Wagner — <em>Amritsar 1919</em></li>
+                    </ul>
+                </div>
+                <div class="resource-box">
+                    <h4>Official Archives</h4>
+                    <ul>
+                        <li>Governor Evan Jenkins Papers</li>
+                        <li>The National Archives UK (DO 142/416)</li>
+                        <li>UK Parliament Hansard (March 1947)</li>
+                        <li>Tribune & Dawn Newspapers (1947)</li>
+                        <li>The Times (25 August 1947)</li>
+                    </ul>
+                </div>
+                <div class="resource-box">
+                    <h4>Academic Sources</h4>
+                    <ul>
+                        <li>Punjab Partition Forum</li>
+                        <li>Sciences Po Violence Database</li>
+                        <li>Caravan Magazine</li>
+                        <li>The Wire India</li>
+                        <li>UCSB Punjab Studies Journal</li>
+                    </ul>
+                </div>
+                <div class="resource-box">
+                    <h4>Eyewitness Testimonies</h4>
+                    <ul>
+                        <li>Parvez Mahmood — <em>The Friday Times</em></li>
+                        <li>Prof. Zakariya — 1947 Partition Archive</li>
+                        <li>Mohammad Qadeer — <em>Lahore in 21st Century</em></li>
+                        <li>SikhiWiki — "The Battle for Amritsar"</li>
+                        <li>Getty Images Archive</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>Created for historical documentation purposes. Sources cited throughout.</p>
+            <p>Amritsar District: 46.5% Muslim pre-Partition | Population ~400,000 | Zero Muslims remained by October 1947</p>
+        </footer>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <p class="modal-date" id="modalDate"></p>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Event Data
+        const eventData = {
+            hallbazaar: {
+                title: "Hall Bazaar — Where It Began",
+                date: "5 March 1947",
+                content: `<p>On the afternoon of March 5, 1947—the Hindu festival of Holi—violence erupted in Hall Bazaar, the commercial heart of Amritsar connecting Hall Gate to the Golden Temple.</p>
+                    <div class="modal-quote"><p>"If one stood on the top of a high building in the night, red flames could be seen rising high, spread over large areas, lending a terrible and awful glow to the darkness of the night. The tall pillars of smoke could be seen from as far as Chheharta which is more than five miles from Amritsar."</p><p class="source">— SikhiWiki</p></div>
+                    <p>Sometimes phosphorus was painted over doors and left to ignite. Hindus and Sikhs trying to escape flames were lynched by mobs. Hall Bazaar and surrounding areas were "almost wholly destroyed."</p>
+                    <p class="modal-sources">Sources: SikhiWiki; Khosla 'Stern Reckoning' p.101; Punjab Partition Forum</p>`
+            },
+            sharifpura_train: {
+                title: "Sharifpura Train Attack",
+                date: "5 March 1947",
+                content: `<p>One of the first massacres occurred when Muslims from Sharifpura stopped a train arriving from Pathankot by manipulating the outer signal.</p>
+                    <div class="modal-quote"><p>"The assailants stopped the arriving train by climbing on to the outer signal and raising it. Then the mob, concealed in Muslim houses along the railway track, fell upon the helpless Hindu and Sikh passengers, and murdered a good number, including women and children before the train could be restarted."</p><p class="source">— SikhiWiki</p></div>
+                    <p>Sharifpura, a suburb spread south of the railway track, became notorious for attacks on trains and lorries from Jullundur, Pathankot, and Narowal. "Men, women and children were chased like animals and gored to death with spears."</p>
+                    <p class="modal-sources">Sources: SikhiWiki; Khawaja Iftikhar; Khosla</p>`
+            },
+            chowkpragdas: {
+                title: "Chowk Pragdas Mosque",
+                date: "6 March & 11 April 1947",
+                content: `<p>Chowk Pragdas, a Hindu business area containing a small mosque, became a flashpoint. On March 6, 25 Muslims were killed.</p>
+                    <div class="modal-quote"><p>"In Chowk Prag Das there was a Hindu business area with a small masjid. In March 1947 the riots started first in this area of Amritsar in which 25 Muslims died."</p><p class="source">— Punjab Partition Forum</p></div>
+                    <p>After a month's lull, rioting resumed on April 11 when a Muslim crowd of 4,000-5,000 came for Friday prayers, well-armed and shouting revenge slogans. After prayers, some attacked Sikhs, reigniting the violence.</p>
+                    <p>The Lahore-Amritsar connection: "News of attacks on a Muslim crowd in Chowk Pragdas in Amritsar ignited a retaliatory attack on Singhpura in Lahore."</p>
+                    <p class="modal-sources">Sources: Punjab Partition Forum; SikhiWiki; Ishtiaq Ahmed pp.147-48</p>`
+            },
+            hathigate: {
+                title: "Hathi Gate — Milkmen Massacred",
+                date: "5-6 March 1947",
+                content: `<p>Hathi Gate area, a Muslim-majority locality, was "especially notorious for attacks on the Sikhs."</p>
+                    <div class="modal-quote"><p>"A large number of Sikhs killed at this time were Sikh factory workers who left work at 5 o'clock... As they approached the City gates such as Hathi Gate, Hall Bazar, Mahan Singh Gate or Ghee Mandi Gate, they were surrounded and done to death. Another class of Sikhs who lost heavily were the Sikh milkmen... by the 6th morning, 18 dead bodies of these men had been carried to the mortuary. The total number of milkmen killed must have been very much larger."</p><p class="source">— SikhiWiki</p></div>
+                    <p class="modal-sources">Sources: SikhiWiki; Gurcharan Singh Talib</p>`
+            },
+            katrajaimal: {
+                title: "Katra Jaimal Singh — Destruction",
+                date: "March 1947",
+                content: `<p>Katra Jaimal Singh, one of the historic katras (fortified neighborhoods) of Amritsar, was devastated in the March violence.</p>
+                    <div class="modal-quote"><p>"Hall Bazar, Katra Jaimal Singh and several other localities were almost wholly destroyed. Attacks on various localities began as the evening fell. Firing from the attackers could be heard all through the night."</p><p class="source">— SikhiWiki</p></div>
+                    <p>By morning, thousands whose homes had been burned or who had been besieged throughout the night left as refugees.</p>
+                    <p class="modal-sources">Sources: SikhiWiki; Getty Images Archive</p>`
+            },
+            faridchowk: {
+                title: "Farid Chowk — Where Riots Began",
+                date: "March 1947",
+                content: `<p>Some accounts trace the very beginning of the riots to a fire at Farid Chowk.</p>
+                    <div class="modal-quote"><p>"In March 1947, there was a fire in a shoe store and clothing store at Farid Chowk in Amritsar. The property was Hindu-owned but businesses were run by Muslims. This marked the beginning of riots in Amritsar."</p><p class="source">— Punjab Partition Forum</p></div>
+                    <p>Farid Chowk, near Hathi Gate in the Muslim-concentration area, was among the "especially notorious" localities for attacks.</p>
+                    <p class="modal-sources">Sources: Punjab Partition Forum; SikhiWiki</p>`
+            },
+            muslim_relocation: {
+                title: "Muslims Ordered to Relocate",
+                date: "5 March 1947",
+                content: `<p>After the violence erupted, the Muslim League leadership in Amritsar held an emergency meeting.</p>
+                    <div class="modal-quote"><p>"Fearing reprisals, a meeting of the Muslim leadership of Amritsar was held later on the same day under Sheikh Sadiq Hasan of Muslim League. It was decided that the Muslims living in Hindu/Sikh-majority areas should be relocated to Muslim-majority areas for safety."</p><p class="source">— Parvez Mahmood, Punjab Partition Forum</p></div>
+                    <p>This decision concentrated Muslims into Sharifpura, Farid Chowk, Chitta Katra, and Lohgarh—making them easier targets come August.</p>
+                    <p class="modal-sources">Sources: Parvez Mahmood; Punjab Partition Forum</p>`
+            },
+            april_riots: {
+                title: "April 11 — Riots Resume",
+                date: "11 April 1947",
+                content: `<p>After a month of relative calm (though stabbing continued), full-scale rioting resumed on April 11.</p>
+                    <div class="modal-quote"><p>"On April 11, which was again a Friday, a large Muslim crowd estimated at 4,000 to 5,000 came to Chowk Pragdas with the ostensible purpose of saying prayers. But they were well-armed and were shouting slogans vowing to take revenge for the Muslims who had been killed in early March."</p><p class="source">— SikhiWiki</p></div>
+                    <p>Typical incidents from April: A Sikh grinding mill was gutted by a Muslim mob. One Sikh was fired on by police for no cause. Sardar Ishar Singh Majhail's car was surrounded by a mob.</p>
+                    <p class="modal-sources">Sources: SikhiWiki</p>`
+            },
+            daimganj: {
+                title: "Daimganj Idgah Attack",
+                date: "10 May 1947",
+                content: `<p>One of the most shocking atrocities occurred when Hindus and Sikhs returning from cremating a child were ambushed.</p>
+                    <div class="modal-quote"><p>"While these Hindus and Sikhs were returning to their homes after cremating the child, the Muslims who were hiding inside the Idgah, fell upon them, killing seven on the spot. The dead bodies were sought to be made unidentifiable by being soaked in petrol and set ablaze."</p><p class="source">— SikhiWiki</p></div>
+                    <p>The smoke attracted police from Amritsar Fort. Authorities imposed a fine of Rs. 20 per adult Muslim male in the locality. "Even barbarians respect the sight of death."</p>
+                    <p class="modal-sources">Sources: SikhiWiki; Chief Secretary correspondence</p>`
+            },
+            hakimangate: {
+                title: "Hakiman Gate Stabbing",
+                date: "2 May 1947",
+                content: `<p>Part of the systematic violence that continued through May.</p>
+                    <div class="modal-quote"><p>"On 2.5.47 one Sikh was stabbed outside Hakiman Gate."</p><p class="source">— SikhiWiki incident log</p></div>
+                    <p>Throughout May, stabbings and murders continued at various gates and crossings. Road junctions were particularly dangerous as they were often guarded by Muslim police.</p>
+                    <p class="modal-sources">Sources: SikhiWiki</p>`
+            },
+            golbagh: {
+                title: "Gol Bagh Murder",
+                date: "21 May 1947",
+                content: `<p>Another victim of the ongoing violence.</p>
+                    <div class="modal-quote"><p>"On 21-5-47 one Sikh was found murdered in Gol Bagh between Baijnath High School and the Railway Footbridge."</p><p class="source">— SikhiWiki</p></div>
+                    <p>The Grand Trunk Road between village Vallah and the Canal was "absolutely closed to Hindus and Sikhs, who inevitably got murdered if found there."</p>
+                    <p class="modal-sources">Sources: SikhiWiki</p>`
+            },
+            bhagtanwala: {
+                title: "Bhagtanwala Gate — 9 Killed",
+                date: "May 1947",
+                content: `<p>Multiple Sikhs killed outside various gates in early May.</p>
+                    <div class="modal-quote"><p>"Sikhs murdered in different localities in the beginning of May, 1947 were: 9 outside Bhagtanwala Gate, near the brick kiln; 7 in Daimganj; 30 outside Rambagh Gate; 12 outside Sharifpura, and a large number in the Muslim abadis of Maqbulpura and Rasulpura."</p><p class="source">— SikhiWiki</p></div>
+                    <p>Bhagtanwala Gate was among the localities "especially notorious" for attacks on Sikhs.</p>
+                    <p class="modal-sources">Sources: SikhiWiki</p>`
+            },
+            chittakatra: {
+                title: "Chitta Katra — Murder & Police Pursuit",
+                date: "26 May 1947",
+                content: `<p>Chitta Katra was a Muslim-majority locality inside the walled city, near Lahori Gate.</p>
+                    <div class="modal-quote"><p>"On 26.5.47 one Muslim Sub-Inspector of Police chased a Hindu from Islamabad Railway Crossing to Khalsa College, and repeatedly fired on him with a revolver. This crossing and all other crossings and junctions of roads were guarded by Muslim Police, who shot dead any Hindu or Sikh they could lay hands on."</p><p class="source">— SikhiWiki</p></div>
+                    <p>Parvez Mahmood's paternal grandparents lived in Chitta Katra until departing "during the first fortnight of August."</p>
+                    <p class="modal-sources">Sources: SikhiWiki; Parvez Mahmood</p>`
+            },
+            drrauf: {
+                title: "Dr. Abdur Rauf — Muslim Hero",
+                date: "June 1947",
+                content: `<p>In one of the most remarkable acts of courage, a Muslim doctor saved 200 non-Muslims cornered in Katra Karamsingh.</p>
+                    <div class="modal-quote"><p>"Asked to decide on their fate, Dr. Rauf invoked Islamic teachings of moral conduct to counter those who wanted to avenge the mistreatment of Muslims in other parts of Amritsar. His words led to all the non-Muslims being set free."</p><p class="source">— TheBetterIndia</p></div>
+                    <p>This was near where Parvez Mahmood's maternal grandfather lived.</p>
+                    <p class="modal-sources">Sources: TheBetterIndia; Partition Museum</p>`
+            },
+            bawaghansham: {
+                title: "Bawa Ghansham — Sikh Who Saved Hundreds",
+                date: "June 1947",
+                content: `<p>A Sikh member of the Communist Party risked his life to shelter Muslims.</p>
+                    <div class="modal-quote"><p>"Many Amritsari Muslims who survived the riots gratefully recall Bawa Ghansham as the man who saved their lives. At great risk to himself, he gave refuge to hundreds of Muslims in his house during the escalating violence in the city."</p><p class="source">— TheBetterIndia</p></div>
+                    <p class="modal-sources">Sources: TheBetterIndia</p>`
+            },
+            jatha_prep: {
+                title: "Majithia House — Jatha Headquarters",
+                date: "July 1947",
+                content: `<p>By July, Sikh armed bands (jathas) were organizing systematically.</p>
+                    <div class="modal-quote"><p>"Ex-INA leaders operating from Majithia house in Amritsar" coordinated jatha activities. "General" Mohan Singh and Colonel N.S. Gill were among the principal organizers.</p><p class="source">— Paul Brass; Ishtiaq Ahmed</p></div>
+                    <p>Jenkins' July fortnightly report estimated jatha strength at around 19,000.</p>
+                    <p class="modal-sources">Sources: Paul Brass; Jenkins Papers; Caravan Magazine</p>`
+            },
+            rural_outrages: {
+                title: "Rural Outrages Begin",
+                date: "30 July 1947",
+                content: `<p>Jenkins' report to Mountbatten documented the shift from urban to rural violence.</p>
+                    <div class="modal-quote"><p>"There has been a string of rural outrages in Amritsar district in which Muslims have been murdered in various ways. The aggressors in all cases seem to be the Sikhs."</p><p class="source">— Jenkins to Mountbatten, 30 July 1947</p></div>
+                    <p>The Sikhs were making "certain preparations." The campaign would escalate dramatically in August.</p>
+                    <p class="modal-sources">Sources: Jenkins Papers; Punjab Partition Forum</p>`
+            },
+            aug1_attacks: {
+                title: "August 1 — The Offensive Begins",
+                date: "1 August 1947",
+                content: `<p>With 14 days left until Independence, Jenkins sent an urgent telegram to Mountbatten.</p>
+                    <div class="modal-quote"><p>"In the countryside around Amritsar, roving Sikh death squads, known as jathas, had begun targeting Muslim villages. Nearly two dozen Muslims had been killed and 30 wounded in just the last 48 hours, while four passenger trains had been attacked."</p><p class="source">— Nisid Hajari, 'Midnight's Furies'</p></div>
+                    <p>"There is going to be trouble with the Sikhs. When, and how bad, the Governor cannot yet say."</p>
+                    <p class="modal-sources">Sources: Hajari; Jenkins Papers; Caravan Magazine</p>`
+            },
+            sharifpura_holdout: {
+                title: "Sharifpura — The Last Holdout",
+                date: "14-15 August 1947",
+                content: `<p>As Independence approached, Amritsar's Muslim population fled en masse—except for Sharifpura.</p>
+                    <div class="modal-quote"><p>"With the approach of August 15, the Muslims fearing the inevitable counter-attack... fled Amritsar in panic. It was a wonderful sight to see how within the space of a day and a night, almost no Muslim was to be seen in Amritsar when freedom dawned on August 15, except those who had entrenched themselves in the notorious area of Sharifpura."</p><p class="source">— SikhiWiki</p></div>
+                    <p>The suburb that had launched the first train attack in March now became the final refuge.</p>
+                    <p class="modal-sources">Sources: SikhiWiki; Khosla</p>`
+            },
+            chowkbijli: {
+                title: "Chowk Bijli Wala — Reduced to Rubble",
+                date: "August 1947",
+                content: `<p>Getty Images captured the devastation.</p>
+                    <div class="modal-quote"><p>"This photo taken in August 1947 shows Indian soldiers walking through the debris of a building in the Chowk Bijli Wala area of Amritsar during unrest following the Partition."</p><p class="source">— Getty Images</p></div>
+                    <p class="modal-sources">Sources: Getty Images; AFP</p>`
+            },
+            lahorigate: {
+                title: "Lahori Gate — The Exodus",
+                date: "August 1947",
+                content: `<p>Lahori Gate witnessed the mass exodus of Muslims toward Pakistan.</p>
+                    <div class="modal-quote"><p>"The day we moved... that area was attacked, and many were killed and injured but we had left about two hours before. The family later left Amritsar for good, taking only the valuables they could carry."</p><p class="source">— Prof. Zakariya, 1947 Partition Archive</p></div>
+                    <p class="modal-sources">Sources: 1947 Partition Archive; Dawn</p>`
+            },
+            maocollege: {
+                title: "MAO College Abandoned",
+                date: "August 1947",
+                content: `<p>Earlier a base for Muslim attacks, now abandoned as Muslims fled.</p>
+                    <div class="modal-quote"><p>"Some large towns like Amritsar and Jullundur, are now quieter, because there are no Muslims left."</p><p class="source">— The Times, 25 August 1947</p></div>
+                    <p>From March to August, the college had been "a very active centre of attack from which Muslim groups sallied out to attack or snipe at Hindus and Sikhs."</p>
+                    <p class="modal-sources">Sources: The Times; SikhiWiki</p>`
+            },
+            khalsacollege_massacre: {
+                title: "Khalsa College — 1000 Killed",
+                date: "Early September 1947",
+                content: `<p>A Pakistan-bound refugee train was attacked near Khalsa College.</p>
+                    <div class="modal-quote"><p>"Earlier in September, they had massacred 1,000 Muslim refugees on a Pakistan-bound train near Khalsa College, Amritsar."</p><p class="source">— Wikipedia</p></div>
+                    <p>Ironically, Khalsa College also served as a refugee camp housing 30,000 Hindu and Sikh refugees from West Punjab.</p>
+                    <p class="modal-sources">Sources: Wikipedia; Tribune</p>`
+            },
+            trainmassacre: {
+                title: "The Great Train Massacre",
+                date: "22 September 1947",
+                content: `<p>The deadliest single attack of the Partition.</p>
+                    <div class="modal-quote"><p>"In what is reputed to be the worst train massacre of Indian refugees yet to occur, 3,000 Muslims were killed and 1,000 wounded when a train was attacked by Sikhs for three hours at Amritsar."</p><p class="source">— Australian Associated Press</p></div>
+                    <p>The British commanding officer shot back with a machine gun until it ran out of ammunition. He was killed soon after—"reportedly by his own men."</p>
+                    <p>Only 100 passengers remained uninjured out of more than 4,000. Pakistan stopped all trains from East Punjab.</p>
+                    <p class="modal-sources">Sources: Wikipedia; Dawn; West Punjab Records</p>`
+            },
+            goldentemple: {
+                title: "Golden Temple — Refuge for All",
+                date: "March–September 1947",
+                content: `<p>The Harmandir Sahib complex became a sanctuary throughout the violence.</p>
+                    <div class="modal-quote"><p>"All the cities were wrapped in flames of fire."</p><p class="source">— Roshan Lal Kapur, Partition Museum</p></div>
+                    <p>The temple's langar (community kitchen) served thousands of displaced persons regardless of religion.</p>
+                    <p class="modal-sources">Sources: Getty Images; SGPC records</p>`
+            },
+            townhall: {
+                title: "Town Hall / Partition Museum",
+                date: "1947–Present",
+                content: `<p>Today the Town Hall houses the Partition Museum, preserving the memory of 1947.</p>
+                    <div class="modal-quote"><p>"What it would have felt like to leave behind their homes, their friends, their lives."</p><p class="source">— Mallika Ahluwalia, Founder</p></div>
+                    <p class="modal-sources">Sources: Partition Museum</p>`
+            },
+            jallianwala: {
+                title: "Jallianwala Bagh — Two Tragedies",
+                date: "1919 & 1947",
+                content: `<p>The garden that saw British bullets in 1919 witnessed neighbor turn against neighbor in 1947.</p>
+                    <p>On April 13, 1919, General Dyer ordered troops to fire on an unarmed crowd of 20,000, killing 380 and wounding 1,500.</p>
+                    <p>In 1947, the violence was communal rather than colonial—but equally devastating.</p>
+                    <p class="modal-sources">Sources: Kim Wagner; National Army Museum</p>`
+            },
+            gobindgarh: {
+                title: "Gobindgarh Fort — Army Base",
+                date: "1947",
+                content: `<p>British troops from the 23rd British Brigade Group were deployed from here.</p>
+                    <p>Two battalions were brought in on 7th March and subsequently withdrawn. "The decision as to which troops to use rests with the local commander."</p>
+                    <p>Despite military presence, the violence could not be contained.</p>
+                    <p class="modal-sources">Sources: UK Parliament Hansard; The National Archives</p>`
+            }
+        };
+
+        // Filter functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const monthSummaries = document.querySelectorAll('.month-summary');
+        const markers = document.querySelectorAll('.event-marker');
+        const cards = document.querySelectorAll('.event-card');
+
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const month = btn.dataset.month;
+                
+                // Update active button
+                filterButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Show/hide month summaries
+                monthSummaries.forEach(summary => {
+                    summary.classList.remove('active');
+                    if (summary.dataset.summary === month) {
+                        summary.classList.add('active');
+                    }
+                });
+                
+                // Filter markers
+                markers.forEach(marker => {
+                    const markerMonth = marker.dataset.month;
+                    if (month === 'all' || markerMonth === month || markerMonth === 'all') {
+                        marker.classList.remove('hidden');
+                    } else {
+                        marker.classList.add('hidden');
+                    }
+                });
+                
+                // Filter cards
+                cards.forEach(card => {
+                    const cardMonth = card.dataset.month;
+                    if (month === 'all' || cardMonth === month || cardMonth === 'all') {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+            });
+        });
+
+        // Modal functionality
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDate = document.getElementById('modalDate');
+        const modalBody = document.getElementById('modalBody');
+
+        function openModal(eventId) {
+            const data = eventData[eventId];
+            if (!data) return;
+            modalTitle.textContent = data.title;
+            modalDate.textContent = data.date;
+            modalBody.innerHTML = data.content;
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        markers.forEach(marker => {
+            marker.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openModal(marker.dataset.event);
+            });
+        });
+
+        cards.forEach(card => {
+            card.addEventListener('click', () => openModal(card.dataset.event));
+        });
+
+        document.getElementById('modalClose').addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    </script>
+</body>
+</html>
